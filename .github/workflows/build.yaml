@@ -15,9 +15,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: linux
-            arch: amd64
-            ext: ""
           - os: windows
             arch: amd64
             ext: ".exe"
@@ -35,22 +32,20 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21' # Или используйте 'stable' для самой актуальной версии
+        go-version: 'stable'
 
-    # Автоматическое скачивание зависимостей (включая tcell)
     - name: Install dependencies
       run: |
         go mod tidy
 
-    # Кросс-компиляция под целевую ОС и архитектуру из матрицы
+    # Кросс-компиляция с оптимизацией размера бинарника
     - name: Build Pong Game
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
       run: |
-        go build -o pong_${{ matrix.os }}_${{ matrix.arch }}${{ matrix.ext }} main.go
+        go build -ldflags="-s -w" -o pong_${{ matrix.os }}_${{ matrix.arch }}${{ matrix.ext }} main.go
 
-    # Загрузка собранных артефактов
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
