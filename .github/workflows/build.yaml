@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Анти-бот защита (Anti-bot / Anti auto-build)
     if: github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' && contains(github.actor, '[bot]') == false
 
     strategy:
@@ -38,11 +37,12 @@ jobs:
       run: |
         go mod tidy
 
-    # Кросс-компиляция с оптимизацией размера бинарника
+    # Кросс-компиляция с принудительно отключенным CGO
     - name: Build Pong Game
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
+        CGO_ENABLED: 0
       run: |
         go build -ldflags="-s -w" -o pong_${{ matrix.os }}_${{ matrix.arch }}${{ matrix.ext }} main.go
 
