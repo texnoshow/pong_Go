@@ -22,13 +22,14 @@ jobs:
         go-version: 'stable'
 
     # Автоматическая инициализация модуля, если файла go.mod еще нет в репозитории
+        # Автоматическая инициализация модуля, если файла go.mod еще нет в репозитории
     - name: Initialize Go Module and Install dependencies
       run: |
         if [ ! -f go.mod ]; then
           go mod init pong_Go
         fi
-        # go mod tidy сам скачает все импортированные в коде зависимости
         go mod tidy
+
 
     # Кросс-компиляция под Windows 32-bit (386) с оптимизацией размера
     - name: Build Pong Game (Windows x86)
