@@ -1,4 +1,4 @@
-name: Go Pong Multiplatform Build
+name: Go Pong Windows x86 Build
 
 on:
   push:
@@ -7,22 +7,10 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-  build:
+  build-win-x86:
     runs-on: ubuntu-latest
+    # Анти-бот защита (Anti-bot / Anti auto-build)
     if: github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' && contains(github.actor, '[bot]') == false
-
-    strategy:
-      matrix:
-        include:
-          - os: windows
-            arch: amd64
-            ext: ".exe"
-          - os: windows
-            arch: "386"
-            ext: ".exe"
-          - os: darwin
-            arch: amd64
-            ext: ""
 
     steps:
     - name: Checkout repository
@@ -33,7 +21,7 @@ jobs:
       with:
         go-version: 'stable'
 
-    # Принудительная инициализация модуля, если файла go.mod еще нет в репозитории
+    # Автоматическая инициализация модуля, если файла go.mod еще нет в репозитории
     - name: Initialize Go Module and Install dependencies
       run: |
         if [ ! -f go.mod ]; then
@@ -42,17 +30,18 @@ jobs:
         go get ://github.com
         go mod tidy
 
-    # Кросс-компиляция с отключенным CGO
-    - name: Build Pong Game
+    # Кросс-компиляция строго под Windows 32-bit (386) с оптимизацией размера
+    - name: Build Pong Game (Windows x86)
       env:
-        GOOS: ${{ matrix.os }}
-        GOARCH: ${{ matrix.arch }}
+        GOOS: windows
+        GOARCH: "386"
         CGO_ENABLED: 0
       run: |
-        go build -ldflags="-s -w" -o pong_${{ matrix.os }}_${{ matrix.arch }}${{ matrix.ext }} main.go
+        go build -ldflags="-s -w" -o pong_windows_x86.exe main.go
 
+    # Загрузка готового .exe артефакта
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: pong-${{ matrix.os }}-${{ matrix.arch }}
-        path: pong_${{ matrix.os }}_${{ matrix.arch }}${{ matrix.ext }}
+        name: pong-windows-x86-exe
+        path: pong_windows_x86.exe
