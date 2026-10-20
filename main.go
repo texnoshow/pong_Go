@@ -4,8 +4,6 @@ import (
 	"math/rand"
 	"strconv"
 	"time"
-
-	"://github.com"
 )
 
 const (
