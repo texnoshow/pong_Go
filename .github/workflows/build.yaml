@@ -33,11 +33,16 @@ jobs:
       with:
         go-version: 'stable'
 
-    - name: Install dependencies
+    # Принудительная инициализация модуля, если файла go.mod еще нет в репозитории
+    - name: Initialize Go Module and Install dependencies
       run: |
+        if [ ! -f go.mod ]; then
+          go mod init pong_Go
+        fi
+        go get ://github.com
         go mod tidy
 
-    # Кросс-компиляция с принудительно отключенным CGO
+    # Кросс-компиляция с отключенным CGO
     - name: Build Pong Game
       env:
         GOOS: ${{ matrix.os }}
