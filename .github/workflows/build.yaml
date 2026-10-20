@@ -9,7 +9,7 @@ on:
 jobs:
   build-win-x86:
     runs-on: ubuntu-latest
-    # Анти-бот защита (Исправлены кавычки)
+    # Анти-бот защита (исправленный синтаксис условий)
     if: github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' && !contains(github.actor, '[bot]')
 
     steps:
@@ -21,8 +21,7 @@ jobs:
       with:
         go-version: 'stable'
 
-    # Автоматическая инициализация модуля, если файла go.mod еще нет в репозитории
-        # Автоматическая инициализация модуля, если файла go.mod еще нет в репозитории
+    # Автоматическая инициализация модуля и подтягивание зависимостей
     - name: Initialize Go Module and Install dependencies
       run: |
         if [ ! -f go.mod ]; then
@@ -30,19 +29,16 @@ jobs:
         fi
         go mod tidy
 
-
-    # Кросс-компиляция под Windows 32-bit (386) с оптимизацией размера
+    # Кросс-компиляция под Windows 32-bit (386) с оптимизацией размера исполняемого файла
     - name: Build Pong Game (Windows x86)
       env:
         GOOS: windows
         GOARCH: "386"
         CGO_ENABLED: 0
       run: |
-        # Если у вас стандартная структура, лучше не указывать main.go принудительно, 
-        # чтобы go build сам собрал пакет из текущей директории.
         go build -ldflags="-s -w" -o pong_windows_x86.exe
 
-    # Загрузка готового .exe артефакта
+    # Загрузка готового .exe артефакта в GitHub Actions
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
