@@ -2,7 +2,7 @@ package main
 
 import (
 	"math/rand"
-	"os"
+	"strconv"
 	"time"
 
 	"://github.com"
@@ -155,11 +155,9 @@ func main() {
 			// Мяч
 			screen.SetContent(ball.X, ball.Y, 'O', nil, style)
 
-			// Вывод счета под полем
-			scoreStr := " Игрок 1 (W/S): %d   |   Игрок 2 (I/K): %d   [Q - Выход]"
-			runes := []rune(string([]byte(scoreStr))) // простая конвертация для вывода текста
-			// Для вывода форматированной строки нарисуем её посимвольно
-			drawText(screen, 2, Height+1, style, "Игрок 1 (W/S): "+string(rune(score1+48))+"   |   Игрок 2 (I/K): "+string(rune(score2+48))+"   [Q - Выход]")
+			// Безопасный вывод счета через пакет strconv (чтобы счет > 9 не ломал отображение)
+			statusText := "Игрок 1 (W/S): " + strconv.Itoa(score1) + "   |   Игрок 2 (I/K): " + strconv.Itoa(score2) + "   [Q - Выход]"
+			drawText(screen, 2, Height+1, style, statusText)
 
 			screen.Show()
 		}
